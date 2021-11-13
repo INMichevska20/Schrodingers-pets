@@ -18,7 +18,7 @@
 
 ## ❓What is our aim?
 
-***Our aim is to develop a softuer or a game about physics.***
+***Our aim is to develop a software or a game about physics.***
 
 <hr>
 
