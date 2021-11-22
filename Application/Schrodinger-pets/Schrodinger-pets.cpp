@@ -3,9 +3,15 @@
 
 using namespace std;
 
+int screenWidth = 120;
+int screenHeight = 30;
+
+int fieldWidth = 12;
+int fieldHeight = 18;
+
 wstring tetromino[7];
 
-int Rotation(int px, int py, int r)
+int Rotation (int px, int py, int r)
 {
     switch (r % 4)
     {
@@ -23,7 +29,7 @@ bool DoesPieceFit(int nTetromino, int nRotation, int nPosX, int nPosY)
     {
         for (int py = 0; py < 4; py++)
         {
-
+           
         }
     }
 }
