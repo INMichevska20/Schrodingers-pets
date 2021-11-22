@@ -3,6 +3,8 @@
 
 using namespace std;
 
+wstring tetromino[7];
+
 int Rotation(int px, int py, int r)
 {
     switch (r % 4)
@@ -14,7 +16,18 @@ int Rotation(int px, int py, int r)
     }
     return 0;
 }
-wstring tetromino[7];
+
+bool DoesPieceFit(int nTetromino, int nRotation, int nPosX, int nPosY)
+{
+    for (int px = 0; px < 4; px++)
+    {
+        for (int py = 0; py < 4; py++)
+        {
+
+        }
+    }
+}
+
 
 int main()
 {
