@@ -11,6 +11,8 @@ int fieldHeight = 18;
 
 wstring tetromino[7];
 
+unsigned char* pField = nullptr;
+
 int Rotation (int px, int py, int r)
 {
     switch (r % 4)
@@ -29,9 +31,24 @@ bool DoesPieceFit(int nTetromino, int nRotation, int nPosX, int nPosY)
     {
         for (int py = 0; py < 4; py++)
         {
-           
+            int pi = Rotation(px, py, nRotation);
+
+            int fi = (nPosY + py) * fieldWidth + (nPosX + px);
+
+            if (nPosX + px >= 0 && nPosX + px < fieldWidth)
+            {
+                if (nPosY + py >= 0 && nPosY + py < fieldHeight)
+                {
+                    if (tetromino[nTetromino][pi] != L'.' && pField[fi] != 0)
+                    {
+                        return false;
+                    }
+                }
+            }
         }
     }
+
+    return true;
 }
 
 
