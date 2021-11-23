@@ -100,6 +100,7 @@ int main()
     int nSpeed = 20;
     bool bGameOver = false;
     bool bKey[4];
+    bool bRotateHold = true;
 
 
     while (!bGameOver)
@@ -120,7 +121,21 @@ int main()
         nCurrentX += (bKey[0] && DoesPieceFit(nCurrentPiece, nCurrentRotation, nCurrentX + 1, nCurrentY)) ? 1 : 0;
         nCurrentX -= (bKey[1] && DoesPieceFit(nCurrentPiece, nCurrentRotation, nCurrentX - 1, nCurrentY)) ? 1 : 0;
         nCurrentY += (bKey[2] && DoesPieceFit(nCurrentPiece, nCurrentRotation, nCurrentX, nCurrentY + 1)) ? 1 : 0;
+
+        // Prevent uncontrollable rotation from holding rotate button
+
+        if (bKey[3])
+        {
+            nCurrentRotation += (bRotateHold && DoesPieceFit(nCurrentRotation + 1, nCurrentX, nCurrentY)) ? 1 : 0;
+            bRotateHold = false;
+
+        }
+        else
+        {
+            bRotateHold = true;
+        }
  
+        
 
 
 
