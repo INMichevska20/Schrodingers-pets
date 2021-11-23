@@ -98,9 +98,11 @@ int main()
     int nSpeedCount = 0;
     int bForceDown = 0;
     int nSpeed = 20;
+    int nPieceCount = 0;
     bool bGameOver = false;
     bool bKey[4];
     bool bRotateHold = true;
+    bool bForceDown = false;
 
 
     while (!bGameOver)
@@ -135,8 +137,47 @@ int main()
             bRotateHold = true;
         }
  
-        
+        // Force a piece down automatically
 
+        if (bForceDown)
+        {
+            // Update difficulty every 50 pieces
+
+            nSpeedCount = 0;
+            nPieceCount++;
+
+            if (nPieceCount % 50 == 0)
+            {
+                if (nSpeed >= 10)
+                {
+                    nSpeed--;
+                }
+
+            }
+
+            // Check if piece can be moved down
+
+            if (DoesPieceFit(nCurrentPiece, nCurrentRotation, nCurrentX, nCurrentY + 1))
+            {
+                nCurrentY++;
+
+            }
+            else // If it can't, lock the piece in place 
+            {
+                for (int px = 0; px < 4; px++)
+                {
+                    for (int py = 0; py < 4; py++)
+                    {
+                        if (tetromino[nCurrentPiece][Rotation(px, py, nCurrentRotation)] != L'.')
+                        {
+                            pField[(nCurrentY + py) * nFieldWidth + (nCurrentX + px)] = nCurrentPiece + 1;
+                        }
+                    }
+                }
+
+            }
+
+        }
 
 
     }
