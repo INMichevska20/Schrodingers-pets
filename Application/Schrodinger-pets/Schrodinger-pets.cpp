@@ -3,11 +3,11 @@
 
 using namespace std;
 
-int screenWidth = 120;
-int screenHeight = 30;
+int nScreenWidth = 120;
+int nScreenHeight = 30;
 
-int fieldWidth = 12;
-int fieldHeight = 18;
+int nFieldWidth = 12;
+int nFieldHeight = 18;
 
 wstring tetromino[7];
 
@@ -33,11 +33,11 @@ bool DoesPieceFit(int nTetromino, int nRotation, int nPosX, int nPosY)
         {
             int pi = Rotation(px, py, nRotation);
 
-            int fi = (nPosY + py) * fieldWidth + (nPosX + px);
+            int fi = (nPosY + py) * nFieldWidth + (nPosX + px);
 
-            if (nPosX + px >= 0 && nPosX + px < fieldWidth)
+            if (nPosX + px >= 0 && nPosX + px < nFieldWidth)
             {
-                if (nPosY + py >= 0 && nPosY + py < fieldHeight)
+                if (nPosY + py >= 0 && nPosY + py < nFieldHeight)
                 {
                     if (tetromino[nTetromino][pi] != L'.' && pField[fi] != 0)
                     {
@@ -90,6 +90,11 @@ int main()
     tetromino[6].append(L".X..");
     tetromino[6].append(L".X..");
 
+
+    int nCurrentPiece = 0;
+    int nCurrentRotation = 0;
+    int nCurrentX = nFieldWidth / 2;
+    int nCurrentY = 0;
     int nSpeedCount = 0;
     int bForceDown = 0;
     int nSpeed = 20;
@@ -110,8 +115,12 @@ int main()
             bKey[4] = (0x8000 & GetAsyncKeyState((unsigned char)("\x27\x25\x28Z"[k]))) != 0;
         }
 
-        
+        // Player Movement
 
+        nCurrentX += (bKey[0] && DoesPieceFit(nCurrentPiece, nCurrentRotation, nCurrentX + 1, nCurrentY)) ? 1 : 0;
+        nCurrentX -= (bKey[1] && DoesPieceFit(nCurrentPiece, nCurrentRotation, nCurrentX - 1, nCurrentY)) ? 1 : 0;
+        nCurrentY += (bKey[2] && DoesPieceFit(nCurrentPiece, nCurrentRotation, nCurrentX, nCurrentY + 1)) ? 1 : 0;
+ 
 
 
 
