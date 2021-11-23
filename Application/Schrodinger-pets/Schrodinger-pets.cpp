@@ -89,4 +89,32 @@ int main()
     tetromino[6].append(L".XX.");
     tetromino[6].append(L".X..");
     tetromino[6].append(L".X..");
+
+    int nSpeedCount = 0;
+    int bForceDown = 0;
+    int nSpeed = 20;
+    bool bGameOver = false;
+    bool bKey[4];
+
+
+    while (!bGameOver)
+    {
+        this_thread::sleep_for(50ms); // 1 Game Tick
+        nSpeedCount++;
+        bForceDown = (nSpeedCount == nSpeed);
+
+        // Player Input
+
+        for (int k = 0; k < 4; k++)
+        {
+            bKey[4] = (0x8000 & GetAsyncKeyState((unsigned char)("\x27\x25\x28Z"[k]))) != 0;
+        }
+
+        
+
+
+
+
+    }
+
 }
