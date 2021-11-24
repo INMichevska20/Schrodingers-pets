@@ -32,12 +32,16 @@ bool DoesPieceFit(int nTetromino, int nRotation, int nPosX, int nPosY)
     {
         for (int py = 0; py < 4; py++)
         {
+            // Get index into piece
             int pi = Rotation(px, py, nRotation);
 
+            //Index enters the field
             int fi = (nPosY + py) * nFieldWidth + (nPosX + px);
 
+            // Check if the current block is in bounds
             if (nPosX + px >= 0 && nPosX + px < nFieldWidth)
             {
+                // Collision check
                 if (nPosY + py >= 0 && nPosY + py < nFieldHeight)
                 {
                     if (tetromino[nTetromino][pi] != L'.' && pField[fi] != 0)
@@ -55,7 +59,7 @@ bool DoesPieceFit(int nTetromino, int nRotation, int nPosX, int nPosY)
 
 int main()
 {
-    // create assets
+    // Create assets
     tetromino[0].append(L"..X.");
     tetromino[0].append(L"..X.");
     tetromino[0].append(L"..X.");
