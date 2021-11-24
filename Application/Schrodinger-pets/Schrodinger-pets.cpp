@@ -1,5 +1,6 @@
 #include <iostream>
 #include <cstring>
+#include <vector>
 
 using namespace std;
 
@@ -99,6 +100,7 @@ int main()
     int bForceDown = 0;
     int nSpeed = 20;
     int nPieceCount = 0;
+    vector<int> vLines;
     bool bGameOver = false;
     bool bKey[4];
     bool bRotateHold = true;
@@ -175,6 +177,27 @@ int main()
                     }
                 }
 
+                // Check for lines
+                for (int py = 0; py < 4; py++)
+                {
+                    if (nCurrentY + py < nFieldHeight - 1)
+                    {
+                        bool bLine = true;
+                        for (int px = 1; px < nFieldWidth - 1; px++)
+                        {
+                            bLine &= (pField[(nCurrentY + py) * nFieldWidth + px]) != 0;
+                        }
+                        if (bLine == true)
+                        {
+                            // Remove the line and set it to "="
+                            for (int px = 1; px < nFieldWidth - 1; px++)
+                            {
+                                pField[(nCurrentY + py) * nFieldWidth + px] = 8;
+                            }
+                            vLines.push_back(nCurrentY + py);
+                        }
+                    }
+                }
             }
 
         }
