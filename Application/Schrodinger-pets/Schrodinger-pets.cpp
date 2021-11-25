@@ -104,6 +104,7 @@ int main()
     int bForceDown = 0;
     int nSpeed = 20;
     int nPieceCount = 0;
+    int nScore;
     vector<int> vLines;
     bool bGameOver = false;
     bool bKey[4];
@@ -202,6 +203,21 @@ int main()
                         }
                     }
                 }
+
+                nScore += 25;
+                if (!vLines.empty())
+                {
+                    nScore += (1 << vLines.size()) * 100;
+                }
+
+                // Pick a new piece
+                nCurrentX = nFieldWidth / 2;
+                nCurrentY = 0;
+                nCurrentRotation = 0;
+                nCurrentPiece = rand() % 7;
+
+                // If the piece doesn't fit straight away, it's game over.
+                bGameOver = !DoesPieceFit(nCurrentPiece, nCurrentRotation, nCurrentX, nCurrentY);
             }
 
         }
