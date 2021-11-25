@@ -1,6 +1,9 @@
 #include <iostream>
 #include <cstring>
 #include <vector>
+#include <thread>
+#include <stdio.h>
+#include <windows.h>
 
 using namespace std;
 
@@ -222,7 +225,17 @@ int main()
 
         }
 
+        // Display =================
 
+        // Draw the field
+
+        for (int x = 0; x < nFieldWidth; x++)
+        {
+            for (int y = 0; y < nFieldHeight; y++)
+            {
+                screen[(y + 2) * nScreenWidth + (x + 2)] = L "ABCDEFG=$"[pField[y * nFieldWidth + x]];
+            }
+        }
     }
 
 }
