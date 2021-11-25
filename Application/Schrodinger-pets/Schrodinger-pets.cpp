@@ -249,6 +249,30 @@ int main()
                 }
             }
         }
+
+        // Draw the score
+        swprintf_s(&screen[2 * nScreenWidth + nFieldWidth + 6], 16, L "Score: %8d", nScore);
+
+        // Animate line completion
+        if (!vLines.empty())
+        {
+            // Display Frame
+            WriteConsoleOutputCharacter(hConsole, screen, nScreenWidth * nScreenHeight, { 0, 0 }, &dwBytesWritten);
+            this_thread::sleep_for(400ms); // delay
+
+            for (auto& v : vLines)
+            {
+                for (int px = 1; px < nFieldWidth - 1; px++)
+                {
+                    for (int py = v; py > 0; py--)
+                    {
+                        pField[py * nFieldWidth + px] = pField[(py - 1) * nFieldWidth + px];
+                    }
+                    pField[px] = 0;
+                }
+            }
+            vLines.clear();
+        }
     }
 
 }
