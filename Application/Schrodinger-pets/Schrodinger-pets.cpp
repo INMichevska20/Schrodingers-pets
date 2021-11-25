@@ -236,6 +236,19 @@ int main()
                 screen[(y + 2) * nScreenWidth + (x + 2)] = L "ABCDEFG=$"[pField[y * nFieldWidth + x]];
             }
         }
+
+        // Draw the current piece
+
+        for (int px = 0; px < 4; px++)
+        {
+            for (int py = 0; py < 4; py++)
+            {
+                if (tetromino[nCurrentPiece][Rotate(px, py, nCurrentRotation)] != L'.')
+                {
+                    screen[(nCurrentY + py + 2) * nScreenWidth + (nCurrentX + px + 2)] = nCurrentPiece + 65;
+                }
+            }
+        }
     }
 
 }
