@@ -273,6 +273,16 @@ int main()
             }
             vLines.clear();
         }
+
+        // Display the frame
+        WriteConsoleOutputCharacter(hConsole, screen, nScreenWidth* nScreenHeight, { 0, 0 }, & dwBytesWritten);
     }
 
+
+    // GameOver
+
+    CloseHandle(hConsole);
+    cout << "Game Over! Score: " << nScore << endl;
+    system("pause");
+    return 0;
 }
