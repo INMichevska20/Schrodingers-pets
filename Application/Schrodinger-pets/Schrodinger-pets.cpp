@@ -62,6 +62,13 @@ bool DoesPieceFit(int nTetromino, int nRotation, int nPosX, int nPosY)
 
 int main()
 {
+    // Create Screen Buffer
+    wchar_t* screen = new wchar_t[nScreenWidth * nScreenHeight];
+    for (int i = 0; i < nScreenWidth * nScreenHeight; i++) screen[i] = L' ';
+    HANDLE hConsole = CreateConsoleScreenBuffer(GENERIC_READ | GENERIC_WRITE, 0, NULL, CONSOLE_TEXTMODE_BUFFER, NULL);
+    SetConsoleActiveScreenBuffer(hConsole);
+    DWORD dwBytesWritten = 0;
+
     // Create assets
     tetromino[0].append(L"..X.");
     tetromino[0].append(L"..X.");
@@ -138,7 +145,7 @@ int main()
 
         if (bKey[3])
         {
-            nCurrentRotation += (bRotateHold && DoesPieceFit(nCurrentRotation + 1, nCurrentX, nCurrentY)) ? 1 : 0;
+            nCurrentRotation += (bRotateHold && DoesPieceFit(nCurrentPiece, nCurrentRotation + 1, nCurrentX, nCurrentY)) ? 1 : 0;
             bRotateHold = false;
 
         }
@@ -233,7 +240,7 @@ int main()
         {
             for (int y = 0; y < nFieldHeight; y++)
             {
-                screen[(y + 2) * nScreenWidth + (x + 2)] = L "ABCDEFG=$"[pField[y * nFieldWidth + x]];
+                screen[(y + 2) * nScreenWidth + (x + 2)] = L"ABCDEFG=$" [pField[y * nFieldWidth + x]] ;
             }
         }
 
@@ -243,7 +250,7 @@ int main()
         {
             for (int py = 0; py < 4; py++)
             {
-                if (tetromino[nCurrentPiece][Rotate(px, py, nCurrentRotation)] != L'.')
+                if (tetromino[nCurrentPiece][Rotation(px, py, nCurrentRotation)] != L'.')
                 {
                     screen[(nCurrentY + py + 2) * nScreenWidth + (nCurrentX + px + 2)] = nCurrentPiece + 65;
                 }
@@ -251,7 +258,7 @@ int main()
         }
 
         // Draw the score
-        swprintf_s(&screen[2 * nScreenWidth + nFieldWidth + 6], 16, L "Score: %8d", nScore);
+        swprintf_s(&screen[2 * nScreenWidth + nFieldWidth + 6], 16, L"Score: %8d", nScore);
 
         // Animate line completion
         if (!vLines.empty())
