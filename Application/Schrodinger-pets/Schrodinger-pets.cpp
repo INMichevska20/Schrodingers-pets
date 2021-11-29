@@ -298,6 +298,14 @@ int main()
 		// Draw Score
 		swprintf_s(&screen[2 * nScreenWidth + nFieldWidth + 6], 16, L"SCORE: %8d", nScore);
 
+		// Gravity - g: 9.8
+		// Height - h: 14 - nCurrentY
+		// Weight - m: 2
+		// Speed - v: 3
+
+		// Kinetic energy: (m * (v * v)) / 2
+		// Potencial energy: m * g * h
+		
 		// Animate Line Completion
 		if (!vLines.empty())
 		{
