@@ -1,4 +1,4 @@
-#include <iostream>
+﻿#include <iostream>
 #include <thread>
 #include <vector>
 #include <stdio.h>
@@ -14,7 +14,38 @@ int nScreenHeight = 30;
 
 wstring tetromino[7];
 
-unsigned char* pField = nullptr;
+wchar_t* pField = nullptr;
+
+// From good old internet
+enum
+{
+	BLACK = 0,
+	DARKBLUE = FOREGROUND_BLUE,
+	DARKGREEN = FOREGROUND_GREEN,
+	DARKCYAN = FOREGROUND_GREEN | FOREGROUND_BLUE,
+	DARKRED = FOREGROUND_RED,
+	DARKMAGENTA = FOREGROUND_RED | FOREGROUND_BLUE,
+	DARKYELLOW = FOREGROUND_RED | FOREGROUND_GREEN,
+	DARKGRAY = FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE,
+	GRAY = FOREGROUND_INTENSITY,
+	BLUE = FOREGROUND_INTENSITY | FOREGROUND_BLUE,
+	GREEN = FOREGROUND_INTENSITY | FOREGROUND_GREEN,
+	CYAN = FOREGROUND_INTENSITY | FOREGROUND_GREEN | FOREGROUND_BLUE,
+	RED = FOREGROUND_INTENSITY | FOREGROUND_RED,
+	MAGENTA = FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_BLUE,
+	YELLOW = FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN,
+	WHITE = FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE,
+};
+
+bool colorSelection(WORD newColor)
+{
+	HANDLE hStdOut = GetStdHandle(STD_OUTPUT_HANDLE);
+
+	if (hStdOut != INVALID_HANDLE_VALUE)
+		return SetConsoleTextAttribute(hStdOut, newColor);
+
+	return false;
+}
 
 int Rotate(int px, int py, int r)
 {
@@ -69,9 +100,7 @@ bool DoesPieceFit(int nTetromino, int nRotation, int nPosX, int nPosY)
 				{
 					// Do collision check
 					if (tetromino[nTetromino][pi] != L'.' && pField[fi] != 0)
-					{
 						return false;
-					}
 				}
 			}
 		}
@@ -82,13 +111,13 @@ bool DoesPieceFit(int nTetromino, int nRotation, int nPosX, int nPosY)
 
 int main()
 {
+	colorSelection(RED);
+
 	// Create Screen Buffer
 	wchar_t* screen = new wchar_t[nScreenWidth * nScreenHeight];
 
 	for (int i = 0; i < nScreenWidth * nScreenHeight; i++)
-	{
 		screen[i] = L' ';
-	}
 
 	HANDLE hConsole = CreateConsoleScreenBuffer(GENERIC_READ | GENERIC_WRITE, 0, NULL, CONSOLE_TEXTMODE_BUFFER, NULL);
 	SetConsoleActiveScreenBuffer(hConsole);
@@ -131,22 +160,16 @@ int main()
 	tetromino[6].append(L"..X...X..XX.....");
 	tetromino[6].append(L"..X...X..XX.....");
 
-
-
 	// Create play field buffer
-	pField = new unsigned char[nFieldWidth * nFieldHeight];
+	pField = new wchar_t[nFieldWidth * nFieldHeight];
 
 	// Board Boundary
 	for (int x = 0; x < nFieldWidth; x++)
 	{
 		for (int y = 0; y < nFieldHeight; y++)
-		{
 			pField[y * nFieldWidth + x] = (x == 0 || x == nFieldWidth - 1 || y == nFieldHeight - 1) ? 9 : 0;
-		}
-
 	}
 
-	// Game Logic
 	bool bKey[4];
 	int nCurrentPiece = 0;
 	int nCurrentRotation = 0;
@@ -173,9 +196,7 @@ int main()
 
 		// Player Input
 		for (int k = 0; k < 4; k++)
-		{
 			bKey[k] = (0x8000 & GetAsyncKeyState((unsigned char)("\x27\x25\x28Z"[k]))) != 0;
-		}
 
 		// Player Movement
 		nCurrentX += (bKey[0] && DoesPieceFit(nCurrentPiece, nCurrentRotation, nCurrentX + 1, nCurrentY)) ? 1 : 0;
@@ -188,11 +209,8 @@ int main()
 			nCurrentRotation += (bRotateHold && DoesPieceFit(nCurrentPiece, nCurrentRotation + 1, nCurrentX, nCurrentY)) ? 1 : 0;
 			bRotateHold = false;
 		}
-
 		else
-		{
 			bRotateHold = true;
-		}
 
 		// Force the piece down the playfield if it's time
 		if (bForceDown)
@@ -205,16 +223,12 @@ int main()
 			if (nPieceCount % 50 == 0)
 			{
 				if (nSpeed >= 10)
-				{
 					nSpeed--;
-				}
 			}
 
 			// Test if piece can be moved down
 			if (DoesPieceFit(nCurrentPiece, nCurrentRotation, nCurrentX, nCurrentY + 1))
-			{
 				nCurrentY++;
-			}
 
 			else
 			{
@@ -224,9 +238,7 @@ int main()
 					for (int py = 0; py < 4; py++)
 					{
 						if (tetromino[nCurrentPiece][Rotate(px, py, nCurrentRotation)] != L'.')
-						{
 							pField[(nCurrentY + py) * nFieldWidth + (nCurrentX + px)] = nCurrentPiece + 1;
-						}
 					}
 				}
 
@@ -237,9 +249,7 @@ int main()
 					{
 						bool bLine = true;
 						for (int px = 1; px < nFieldWidth - 1; px++)
-						{
 							bLine &= (pField[(nCurrentY + py) * nFieldWidth + px]) != 0;
-						}
 
 						if (bLine == true)
 						{
@@ -253,13 +263,9 @@ int main()
 						}
 					}
 				}
-
-				nScore += 25;
-
+				//nScore += 25;
 				if (!vLines.empty())
-				{
-					nScore += (1 << vLines.size()) * 100;
-				}
+					nScore += (1 << vLines.size());
 
 				// Pick a new piece
 				nCurrentX = nFieldWidth / 2;
@@ -274,13 +280,13 @@ int main()
 
 		// Display
 
+		wchar_t symbols[11] = { L" ABCDEFG=■" };
+
 		// Draw Field
 		for (int x = 0; x < nFieldWidth; x++)
 		{
 			for (int y = 0; y < nFieldHeight; y++)
-			{
-				screen[(y + 2) * nScreenWidth + (x + 2)] = L" ABCDEFG=#"[pField[y * nFieldWidth + x]];
-			}
+				screen[(y + 2) * nScreenWidth + (x + 2)] = symbols[pField[y * nFieldWidth + x]];
 		}
 
 		// Draw the current piece
@@ -289,9 +295,7 @@ int main()
 			for (int py = 0; py < 4; py++)
 			{
 				if (tetromino[nCurrentPiece][Rotate(px, py, nCurrentRotation)] != L'.')
-				{
 					screen[(nCurrentY + py + 2) * nScreenWidth + (nCurrentX + px + 2)] = nCurrentPiece + 65;
-				}
 			}
 		}
 
@@ -305,7 +309,7 @@ int main()
 
 		// Kinetic energy: (m * (v * v)) / 2
 		// Potencial energy: m * g * h
-		
+
 		// Animate Line Completion
 		if (!vLines.empty())
 		{
@@ -319,10 +323,7 @@ int main()
 				for (int px = 1; px < nFieldWidth - 1; px++)
 				{
 					for (int py = v; py > 0; py--)
-					{
 						pField[py * nFieldWidth + px] = pField[(py - 1) * nFieldWidth + px];
-
-					}
 
 					pField[px] = 0;
 				}
