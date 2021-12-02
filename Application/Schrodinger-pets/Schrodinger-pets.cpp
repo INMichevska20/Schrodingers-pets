@@ -38,6 +38,8 @@ enum
 	WHITE = FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE,
 };
 
+WORD Set[] = { WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE };
+
 bool colorSelection(WORD newColor)
 {
 	HANDLE hStdOut = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -47,9 +49,6 @@ bool colorSelection(WORD newColor)
 
 	return false;
 }
-
-using namespace std;
-
 
 //from good old internet
 void gotoxy(int x, int y)
@@ -63,6 +62,7 @@ void gotoxy(int x, int y)
 
 void Logo()
 {
+	colorSelection(YELLOW);
 	cout << R"(
 		  ____ ____ _  _ ____ ____ ___  _ _  _ ____ ____ ____ . ____    ___  ____ ___ ____ 
 		  [__  |    |__| |__/ |  | |  \ | |\ | | __ |___ |__/ ' [__     |__] |___  |  [__  
@@ -71,81 +71,75 @@ void Logo()
 )" << '\n';
 }
 
+void game();
+void helpMenu();
+
 void mainMenu()
 {
 	Logo();
 
-	int Set[] = { 7, 7, 7 };
-	int counter = 2;
+	int counter = 1;
 	char key;
 
 	for (int i = 0;;)
 	{
-		gotoxy(20, 5);
-		//color(Set[0]);
+		if (counter == 1) { Set[0] = RED; }
+		if (counter == 2) { Set[1] = RED; }
+		if (counter == 3) { Set[2] = RED; }
+		if (counter == 4) { Set[3] = RED; }
+
+		gotoxy(34, 5);
+		colorSelection(Set[0]);
 		cout << "1. Start";
 
-		gotoxy(20, 6);
-		//color(Set[1]);
+		gotoxy(34, 6);
+		colorSelection(Set[1]);
 		cout << "2. Help";
 
-		gotoxy(20, 7);
-		//color(Set[2]);
+		gotoxy(34, 7);
+		colorSelection(Set[2]);
 		cout << "3. Settings";
+
+		gotoxy(34, 8);
+		colorSelection(Set[3]);
+		cout << "4. Exit";
 
 		key = _getch();
 
-		if (key == 72 && (counter >= 2 && counter <= 3)) // 72 - up arrow (keyboard)
-		{
+		if (key == 72 && (counter >= 2 && counter <= 4)) // 72 - up arrow (keyboard)
 			counter--;
-		}
-		if (key == 80 && (counter >= 1 && counter <= 2)) // 80 - down arrow (keyboard)
-		{
+		if (key == 80 && (counter >= 1 && counter <= 3)) // 80 - down arrow (keyboard)
 			counter++;
-		}
-		if (key == '\r') //carriage return - enter (keyboard)
+
+		//carriage return - enter (keyboard)
+		if (key == '\r')
 		{
-			for (int i = 0; i < 3; i++)
-				cout << endl;
+			for (int i = 0; i < 4; i++)
+				Set[i] = WHITE;
+
 			system("CLS");
 
 			if (counter == 1)
 			{
-				cout << "Menu 1 is open!";
+				game();
+				break;
 			}
 			else if (counter == 2)
 			{
-				cout << "  Controls:" << endl;
-				cout << "  Right arrow: Move the tetromino to the right by 1 block!" << endl;
-				cout << "  Left arrow: Move the tetromino to the left by 1 block!" << endl;
-				cout << "  Down arrow: Drop the tetromino down by 1 block! " << endl;
-				cout << "  Button 'Z': Rotate the tetromino by 90*!";
+				helpMenu();
+				break;
 			}
 			else if (counter == 3)
 			{
 				cout << "Menu 3 is open!";
 			}
+			else if (counter == 4)
+			{
+				break;
+			}
 		}
-
-		Set[0] = 7;
-		Set[1] = 7;
-		Set[2] = 7;
-
-		if (counter == 1)
-		{
-			Set[0] = 12;
-		}
-
-		if (counter == 2)
-		{
-			Set[1] = 12;
-		}
-
-		if (counter == 3)
-		{
-			Set[2] = 12;
-		}
-
+		for (int i = 0; i < 4; i++)
+			Set[i] = WHITE;
 	}
 }
 
@@ -153,69 +147,45 @@ void helpMenu()
 {
 	Logo();
 
-	int Set[] = { 7, 7, 7 };
-	int counter = 2;
+	int counter = 1;
 	char key;
 
 	for (int i = 0;;)
 	{
-		gotoxy(20, 6);
-		//color(Set[1]);
-		cout << "2. Help";
+		if (counter == 1) { Set[0] = RED; }
+
+		colorSelection(GREEN);
+		gotoxy(25, 5);
+		cout << "  Controls:" << endl;
+		gotoxy(25, 6);
+		cout << "  Right arrow: Move the tetromino to the right by 1 block!" << endl;
+		gotoxy(25, 7);
+		cout << "  Left arrow: Move the tetromino to the left by 1 block!" << endl;
+		gotoxy(25, 8);
+		cout << "  Down arrow: Drop the tetromino down by 1 block! " << endl;
+		gotoxy(25, 9);
+		cout << "  Up arrow: Rotate the tetromino by 90*!";
+
+		gotoxy(34, 11);
+		colorSelection(Set[0]);
+		cout << "Go Back";
 
 		key = _getch();
 
-		if (key == 72 && (counter >= 2 && counter <= 3)) // 72 - up arrow (keyboard)
+		//carriage return - enter (keyboard)
+		if (key == '\r')
 		{
-			counter--;
-		}
-		if (key == 80 && (counter >= 1 && counter <= 2)) // 80 - down arrow (keyboard)
-		{
-			counter++;
-		}
-		if (key == '\r') //carriage return - enter (keyboard)
-		{
-			for (int i = 0; i < 3; i++)
-				cout << endl;
+			Set[0] = WHITE;
+
 			system("CLS");
 
 			if (counter == 1)
 			{
-				cout << "  Menu 1 is open!";
-			}
-			else if (counter == 2)
-			{
-				cout << "  Controls:" << endl;
-				cout << "  Right arrow: Move the tetromino to the right by 1 block!" << endl;
-				cout << "  Left arrow: Move the tetromino to the left by 1 block!" << endl;
-				cout << "  Down arrow: Drop the tetromino down by 1 block! " << endl;
-				cout << "  Button 'Z': Rotate the tetromino by 90*!";
-			}
-			else if (counter == 3)
-			{
-				cout << "  Menu 3 is open!";
+				mainMenu();
+				break;
 			}
 		}
-
-		Set[0] = 7;
-		Set[1] = 7;
-		Set[2] = 7;
-
-		if (counter == 1)
-		{
-			Set[0] = 12;
-		}
-
-		if (counter == 2)
-		{
-			Set[1] = 12;
-		}
-
-		if (counter == 3)
-		{
-			Set[2] = 12;
-		}
-
+		Set[0] = WHITE;
 	}
 }
 
@@ -281,9 +251,8 @@ bool DoesPieceFit(int nTetromino, int nRotation, int nPosX, int nPosY)
 	return true;
 }
 
-int main()
+void game()
 {
-	mainMenu();
 	colorSelection(RED);
 
 	// Create Screen Buffer
@@ -369,7 +338,7 @@ int main()
 
 		// Player Input
 		for (int k = 0; k < 4; k++)
-			bKey[k] = (0x8000 & GetAsyncKeyState((unsigned char)("\x27\x25\x28Z"[k]))) != 0;
+			bKey[k] = (0x8000 & GetAsyncKeyState((unsigned char)("\x27\x25\x28\x26"[k]))) != 0;
 
 		// Player Movement
 		nCurrentX += (bKey[0] && DoesPieceFit(nCurrentPiece, nCurrentRotation, nCurrentX + 1, nCurrentY)) ? 1 : 0;
@@ -513,7 +482,13 @@ int main()
 	CloseHandle(hConsole);
 
 	cout << "Game Over! Score:" << nScore << endl;
+	Sleep(1000);
+	system("CLS");
+	mainMenu();
+}
 
-	system("pause");
+int main()
+{
+	mainMenu();
 	return 0;
 }
