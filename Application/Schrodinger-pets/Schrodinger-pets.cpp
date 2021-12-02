@@ -3,6 +3,7 @@
 #include <vector>
 #include <stdio.h>
 #include <Windows.h>
+#include <conio.h>
 
 using namespace std;
 
@@ -45,6 +46,177 @@ bool colorSelection(WORD newColor)
 		return SetConsoleTextAttribute(hStdOut, newColor);
 
 	return false;
+}
+
+using namespace std;
+
+
+//from good old internet
+void gotoxy(int x, int y)
+{
+	COORD c;
+	c.X = x;
+	c.Y = y;
+	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), c);
+}
+
+
+void Logo()
+{
+	cout << R"(
+		  ____ ____ _  _ ____ ____ ___  _ _  _ ____ ____ ____ . ____    ___  ____ ___ ____ 
+		  [__  |    |__| |__/ |  | |  \ | |\ | | __ |___ |__/ ' [__     |__] |___  |  [__  
+		  ___] |___ |  | |  \ |__| |__/ | | \| |__] |___ |  \   ___]    |    |___  |  ___] 
+                                                                                       
+)" << '\n';
+}
+
+void mainMenu()
+{
+	Logo();
+
+	int Set[] = { 7, 7, 7 };
+	int counter = 2;
+	char key;
+
+	for (int i = 0;;)
+	{
+		gotoxy(20, 5);
+		//color(Set[0]);
+		cout << "1. Start";
+
+		gotoxy(20, 6);
+		//color(Set[1]);
+		cout << "2. Help";
+
+		gotoxy(20, 7);
+		//color(Set[2]);
+		cout << "3. Settings";
+
+		key = _getch();
+
+		if (key == 72 && (counter >= 2 && counter <= 3)) // 72 - up arrow (keyboard)
+		{
+			counter--;
+		}
+		if (key == 80 && (counter >= 1 && counter <= 2)) // 80 - down arrow (keyboard)
+		{
+			counter++;
+		}
+		if (key == '\r') //carriage return - enter (keyboard)
+		{
+			for (int i = 0; i < 3; i++)
+				cout << endl;
+			system("CLS");
+
+			if (counter == 1)
+			{
+				cout << "Menu 1 is open!";
+			}
+			else if (counter == 2)
+			{
+				cout << "  Controls:" << endl;
+				cout << "  Right arrow: Move the tetromino to the right by 1 block!" << endl;
+				cout << "  Left arrow: Move the tetromino to the left by 1 block!" << endl;
+				cout << "  Down arrow: Drop the tetromino down by 1 block! " << endl;
+				cout << "  Button 'Z': Rotate the tetromino by 90*!";
+			}
+			else if (counter == 3)
+			{
+				cout << "Menu 3 is open!";
+			}
+		}
+
+		Set[0] = 7;
+		Set[1] = 7;
+		Set[2] = 7;
+
+		if (counter == 1)
+		{
+			Set[0] = 12;
+		}
+
+		if (counter == 2)
+		{
+			Set[1] = 12;
+		}
+
+		if (counter == 3)
+		{
+			Set[2] = 12;
+		}
+
+	}
+}
+
+void helpMenu()
+{
+	Logo();
+
+	int Set[] = { 7, 7, 7 };
+	int counter = 2;
+	char key;
+
+	for (int i = 0;;)
+	{
+		gotoxy(20, 6);
+		//color(Set[1]);
+		cout << "2. Help";
+
+		key = _getch();
+
+		if (key == 72 && (counter >= 2 && counter <= 3)) // 72 - up arrow (keyboard)
+		{
+			counter--;
+		}
+		if (key == 80 && (counter >= 1 && counter <= 2)) // 80 - down arrow (keyboard)
+		{
+			counter++;
+		}
+		if (key == '\r') //carriage return - enter (keyboard)
+		{
+			for (int i = 0; i < 3; i++)
+				cout << endl;
+			system("CLS");
+
+			if (counter == 1)
+			{
+				cout << "  Menu 1 is open!";
+			}
+			else if (counter == 2)
+			{
+				cout << "  Controls:" << endl;
+				cout << "  Right arrow: Move the tetromino to the right by 1 block!" << endl;
+				cout << "  Left arrow: Move the tetromino to the left by 1 block!" << endl;
+				cout << "  Down arrow: Drop the tetromino down by 1 block! " << endl;
+				cout << "  Button 'Z': Rotate the tetromino by 90*!";
+			}
+			else if (counter == 3)
+			{
+				cout << "  Menu 3 is open!";
+			}
+		}
+
+		Set[0] = 7;
+		Set[1] = 7;
+		Set[2] = 7;
+
+		if (counter == 1)
+		{
+			Set[0] = 12;
+		}
+
+		if (counter == 2)
+		{
+			Set[1] = 12;
+		}
+
+		if (counter == 3)
+		{
+			Set[2] = 12;
+		}
+
+	}
 }
 
 int Rotate(int px, int py, int r)
@@ -111,6 +283,7 @@ bool DoesPieceFit(int nTetromino, int nRotation, int nPosX, int nPosY)
 
 int main()
 {
+	mainMenu();
 	colorSelection(RED);
 
 	// Create Screen Buffer
