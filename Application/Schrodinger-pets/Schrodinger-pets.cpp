@@ -444,13 +444,12 @@ void game()
 		// Draw Score
 		swprintf_s(&screen[2 * nScreenWidth + nFieldWidth + 6], 16, L"SCORE: %8d", nScore);
 
-		// Gravity - g: 9.8
-		// Height - h: 14 - nCurrentY
-		// Weight - m: 2
-		// Speed - v: 3
-
-		// Kinetic energy: (m * (v * v)) / 2
-		// Potencial energy: m * g * h
+		const float gravity = 9.8;
+		const int weightOfBlock = 2;
+		const int speedOfBlock = 3;
+		int height = 14 - nCurrentY;
+		float kineticEnergy = (weightOfBlock * pow(speedOfBlock, 2)) / 2;
+		float potentialEnergy = weightOfBlock * gravity * height;
 
 		// Animate Line Completion
 		if (!vLines.empty())
