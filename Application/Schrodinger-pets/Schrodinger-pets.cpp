@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <Windows.h>
 #include <conio.h>
+#include <string>
 
 using namespace std;
 
@@ -13,7 +14,8 @@ int nFieldHeight = 18;
 int nScreenWidth = 120;
 int nScreenHeight = 30;
 
-wstring tetromino[7];
+const int xStartPosition = 50;
+wstring pieces[7];
 
 wchar_t* pField = nullptr;
 
@@ -38,7 +40,7 @@ enum
 	WHITE = FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE,
 };
 
-WORD Set[] = { WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE };
+WORD displayColor[] = { WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE };
 
 bool colorSelection(WORD newColor)
 {
@@ -71,8 +73,32 @@ void Logo()
 )" << '\n';
 }
 
+void helpLogo()
+{
+	colorSelection(YELLOW);
+	cout << R"(
+						_  _ ____ _    ___  
+						|__| |___ |    |__] 
+						|  | |___ |___ |    
+                                                                                                                                                                 
+)" << '\n';
+}
+
+void settingsLogo()
+{
+	colorSelection(YELLOW);
+	cout << R"(
+				____ ____ ___ ___ _ _  _ ____ ____ 
+				[__  |___  |   |  | |\ | | __ [__  
+				___] |___  |   |  | | \| |__] ___] 
+                                                                                                                
+)" << '\n';
+}
+
 void game();
+void GeneratePieces();
 void helpMenu();
+void settingsMenu();
 
 void mainMenu()
 {
@@ -81,27 +107,27 @@ void mainMenu()
 	int counter = 1;
 	char key;
 
-	for (int i = 0;;)
+	for (;;)
 	{
-		if (counter == 1) { Set[0] = RED; }
-		if (counter == 2) { Set[1] = RED; }
-		if (counter == 3) { Set[2] = RED; }
-		if (counter == 4) { Set[3] = RED; }
+		if (counter >= 1 && counter <= 4)
+		{
+			displayColor[counter - 1] = RED;
+		}
 
-		gotoxy(34, 5);
-		colorSelection(Set[0]);
+		gotoxy(xStartPosition, 5);
+		colorSelection(displayColor[0]);
 		cout << "1. Start";
 
-		gotoxy(34, 6);
-		colorSelection(Set[1]);
+		gotoxy(xStartPosition, 6);
+		colorSelection(displayColor[1]);
 		cout << "2. Help";
 
-		gotoxy(34, 7);
-		colorSelection(Set[2]);
+		gotoxy(xStartPosition, 7);
+		colorSelection(displayColor[2]);
 		cout << "3. Settings";
 
-		gotoxy(34, 8);
-		colorSelection(Set[3]);
+		gotoxy(xStartPosition, 8);
+		colorSelection(displayColor[3]);
 		cout << "4. Exit";
 
 		key = _getch();
@@ -115,7 +141,7 @@ void mainMenu()
 		if (key == '\r')
 		{
 			for (int i = 0; i < 4; i++)
-				Set[i] = WHITE;
+				displayColor[i] = WHITE;
 
 			system("CLS");
 
@@ -131,7 +157,8 @@ void mainMenu()
 			}
 			else if (counter == 3)
 			{
-				cout << "Menu 3 is open!";
+				settingsMenu();
+				break;
 			}
 			else if (counter == 4)
 			{
@@ -139,20 +166,20 @@ void mainMenu()
 			}
 		}
 		for (int i = 0; i < 4; i++)
-			Set[i] = WHITE;
+			displayColor[i] = WHITE;
 	}
 }
 
 void helpMenu()
 {
-	Logo();
+	helpLogo();
 
 	int counter = 1;
 	char key;
 
 	for (int i = 0;;)
 	{
-		if (counter == 1) { Set[0] = RED; }
+		if (counter == 1) { displayColor[0] = RED; }
 
 		colorSelection(GREEN);
 		gotoxy(25, 5);
@@ -166,16 +193,16 @@ void helpMenu()
 		gotoxy(25, 9);
 		cout << "  Up arrow: Rotate the tetromino by 90*!";
 
-		gotoxy(34, 11);
-		colorSelection(Set[0]);
-		cout << "Go Back";
+		gotoxy(xStartPosition, 11);
+		colorSelection(displayColor[0]);
+		cout << "		  Go Back";
 
 		key = _getch();
 
 		//carriage return - enter (keyboard)
 		if (key == '\r')
 		{
-			Set[0] = WHITE;
+			displayColor[0] = WHITE;
 
 			system("CLS");
 
@@ -185,7 +212,76 @@ void helpMenu()
 				break;
 			}
 		}
-		Set[0] = WHITE;
+		displayColor[0] = WHITE;
+	}
+}
+
+void settingsMenu()
+{
+	settingsLogo();
+
+	int counter = 1;
+	char key;
+
+	for (int i = 0;;)
+	{
+		if (counter == 1) { displayColor[0] = RED; }
+		if (counter == 2) { displayColor[1] = RED; }
+		if (counter == 3) { displayColor[2] = RED; }
+		if (counter == 4) { displayColor[3] = RED; }
+
+		gotoxy(xStartPosition, 5);
+		colorSelection(displayColor[0]);
+		cout << "1. Start";
+
+		gotoxy(xStartPosition, 6);
+		colorSelection(displayColor[1]);
+		cout << "2. Help";
+
+		gotoxy(xStartPosition, 7);
+		colorSelection(displayColor[2]);
+		cout << "3. Settings";
+
+		gotoxy(xStartPosition, 8);
+		colorSelection(displayColor[3]);
+		cout << "4. Exit";
+
+		key = _getch();
+
+		if (key == 72 && (counter >= 2 && counter <= 4)) // 72 - up arrow (keyboard)
+			counter--;
+		if (key == 80 && (counter >= 1 && counter <= 3)) // 80 - down arrow (keyboard)
+			counter++;
+
+		//carriage return - enter (keyboard)
+		if (key == '\r')
+		{
+			for (int i = 0; i < 4; i++)
+				displayColor[i] = WHITE;
+
+			system("CLS");
+
+			if (counter == 1)
+			{
+				game();
+				break;
+			}
+			else if (counter == 2)
+			{
+				helpMenu();
+				break;
+			}
+			else if (counter == 3)
+			{
+
+			}
+			else if (counter == 4)
+			{
+				break;
+			}
+		}
+		for (int i = 0; i < 4; i++)
+			displayColor[i] = WHITE;
 	}
 }
 
@@ -241,7 +337,7 @@ bool DoesPieceFit(int nTetromino, int nRotation, int nPosX, int nPosY)
 				if (nPosY + py >= 0 && nPosY + py < nFieldHeight)
 				{
 					// Do collision check
-					if (tetromino[nTetromino][pi] != L'.' && pField[fi] != 0)
+					if (pieces[nTetromino][pi] != L'.' && pField[fi] != 0)
 						return false;
 				}
 			}
@@ -267,40 +363,7 @@ void game()
 	DWORD dwBytesWritten = 0;
 
 	// Create assets
-	tetromino[0].append(L"..X...X...X...X.");
-	tetromino[0].append(L"..X...X...X...X.");
-	tetromino[0].append(L"..X...X...X...X.");
-	tetromino[0].append(L"..X...X...X...X.");
-
-	tetromino[1].append(L"..X..XX...X.....");
-	tetromino[1].append(L"..X..XX...X.....");
-	tetromino[1].append(L"..X..XX...X.....");
-	tetromino[1].append(L"..X..XX...X.....");
-
-	tetromino[2].append(L".....XX..XX.....");
-	tetromino[2].append(L".....XX..XX.....");
-	tetromino[2].append(L".....XX..XX.....");
-	tetromino[2].append(L".....XX..XX.....");
-
-	tetromino[3].append(L"..X..XX..X......");
-	tetromino[3].append(L"..X..XX..X......");
-	tetromino[3].append(L"..X..XX..X......");
-	tetromino[3].append(L"..X..XX..X......");
-
-	tetromino[4].append(L".X...XX...X.....");
-	tetromino[4].append(L".X...XX...X.....");
-	tetromino[4].append(L".X...XX...X.....");
-	tetromino[4].append(L".X...XX...X.....");
-
-	tetromino[5].append(L".X...X...XX.....");
-	tetromino[5].append(L".X...X...XX.....");
-	tetromino[5].append(L".X...X...XX.....");
-	tetromino[5].append(L".X...X...XX.....");
-
-	tetromino[6].append(L"..X...X..XX.....");
-	tetromino[6].append(L"..X...X..XX.....");
-	tetromino[6].append(L"..X...X..XX.....");
-	tetromino[6].append(L"..X...X..XX.....");
+	GeneratePieces();
 
 	// Create play field buffer
 	pField = new wchar_t[nFieldWidth * nFieldHeight];
@@ -313,9 +376,9 @@ void game()
 	}
 
 	bool bKey[4];
-	int nCurrentPiece = 0;
+	int nCurrentPiece = rand() % 7;
 	int nCurrentRotation = 0;
-	int nCurrentX = nFieldWidth / 2;
+	int nCurrentX = rand() % 5 + 1;
 	int nCurrentY = 0;
 	int nSpeed = 20;
 	int nSpeedCount = 0;
@@ -379,7 +442,7 @@ void game()
 				{
 					for (int py = 0; py < 4; py++)
 					{
-						if (tetromino[nCurrentPiece][Rotate(px, py, nCurrentRotation)] != L'.')
+						if (pieces[nCurrentPiece][Rotate(px, py, nCurrentRotation)] != L'.')
 							pField[(nCurrentY + py) * nFieldWidth + (nCurrentX + px)] = nCurrentPiece + 1;
 					}
 				}
@@ -390,6 +453,7 @@ void game()
 					if (nCurrentY + py < nFieldHeight - 1)
 					{
 						bool bLine = true;
+
 						for (int px = 1; px < nFieldWidth - 1; px++)
 							bLine &= (pField[(nCurrentY + py) * nFieldWidth + px]) != 0;
 
@@ -399,18 +463,16 @@ void game()
 							for (int px = 1; px < nFieldWidth - 1; px++)
 							{
 								pField[(nCurrentY + py) * nFieldWidth + px] = 8;
-
-								vLines.push_back(nCurrentY + py);
 							}
+							vLines.push_back(nCurrentY + py);
 						}
 					}
 				}
-				//nScore += 25;
 				if (!vLines.empty())
-					nScore += (1 << vLines.size());
+					nScore += (1 << vLines.size() * 2);
 
 				// Pick a new piece
-				nCurrentX = nFieldWidth / 2;
+				nCurrentX = rand() % 5 + 1;
 				nCurrentY = 0;
 				nCurrentRotation = 0;
 				nCurrentPiece = rand() % 7;
@@ -436,7 +498,7 @@ void game()
 		{
 			for (int py = 0; py < 4; py++)
 			{
-				if (tetromino[nCurrentPiece][Rotate(px, py, nCurrentRotation)] != L'.')
+				if (pieces[nCurrentPiece][Rotate(px, py, nCurrentRotation)] != L'.')
 					screen[(nCurrentY + py + 2) * nScreenWidth + (nCurrentX + px + 2)] = nCurrentPiece + 65;
 			}
 		}
@@ -485,6 +547,44 @@ void game()
 	Sleep(1000);
 	system("CLS");
 	mainMenu();
+}
+
+void GeneratePieces()
+{
+	pieces[0].append(L"..X...X...X...X.");
+	pieces[0].append(L"..X...X...X...X.");
+	pieces[0].append(L"..X...X...X...X.");
+	pieces[0].append(L"..X...X...X...X.");
+
+	pieces[1].append(L"..X..XX...X.....");
+	pieces[1].append(L"..X..XX...X.....");
+	pieces[1].append(L"..X..XX...X.....");
+	pieces[1].append(L"..X..XX...X.....");
+
+	pieces[2].append(L".....XX..XX.....");
+	pieces[2].append(L".....XX..XX.....");
+	pieces[2].append(L".....XX..XX.....");
+	pieces[2].append(L".....XX..XX.....");
+
+	pieces[3].append(L"..X..XX..X......");
+	pieces[3].append(L"..X..XX..X......");
+	pieces[3].append(L"..X..XX..X......");
+	pieces[3].append(L"..X..XX..X......");
+
+	pieces[4].append(L".X...XX...X.....");
+	pieces[4].append(L".X...XX...X.....");
+	pieces[4].append(L".X...XX...X.....");
+	pieces[4].append(L".X...XX...X.....");
+
+	pieces[5].append(L".X...X...XX.....");
+	pieces[5].append(L".X...X...XX.....");
+	pieces[5].append(L".X...X...XX.....");
+	pieces[5].append(L".X...X...XX.....");
+
+	pieces[6].append(L"..X...X..XX.....");
+	pieces[6].append(L"..X...X..XX.....");
+	pieces[6].append(L"..X...X..XX.....");
+	pieces[6].append(L"..X...X..XX.....");
 }
 
 int main()
