@@ -95,6 +95,13 @@ void settingsLogo()
 }
 
 void game();
+void ChangeDifficultyIfNeeded(int& nSpeedCount, int& nPieceCount, int& nSpeed);
+void DrawScore(wchar_t* screen, int nScore);
+void DrawPiece(int nCurrentPiece, int nCurrentRotation, wchar_t* screen, int nCurrentY, int nCurrentX);
+void DrawField(wchar_t* screen, wchar_t  symbols[11]);
+void IncreaseScoreIfNeeded(std::vector<int>& vLines, int& nScore);
+void CheckCompletedLines(int nCurrentY, std::vector<int>& vLines);
+void GenerateNewPiece(int& nCurrentX, int& nCurrentY, int& nCurrentRotation, int& nCurrentPiece);
 void GeneratePieces();
 void helpMenu();
 void settingsMenu();
@@ -421,14 +428,7 @@ void game()
 		{
 			// Update difficulty every 50 pieces
 
-			nSpeedCount = 0;
-			nPieceCount++;
-
-			if (nPieceCount % 50 == 0)
-			{
-				if (nSpeed >= 10)
-					nSpeed--;
-			}
+			ChangeDifficultyIfNeeded(nSpeedCount, nPieceCount, nSpeed);
 
 			// Test if piece can be moved down
 			if (DoesPieceFit(nCurrentPiece, nCurrentRotation, nCurrentX, nCurrentY + 1))
@@ -447,34 +447,12 @@ void game()
 				}
 
 				// Check for lines
-				for (int py = 0; py < 4; py++)
-				{
-					if (nCurrentY + py < nFieldHeight - 1)
-					{
-						bool bLine = true;
+				CheckCompletedLines(nCurrentY, vLines);
 
-						for (int px = 1; px < nFieldWidth - 1; px++)
-							bLine &= (pField[(nCurrentY + py) * nFieldWidth + px]) != 0;
-
-						if (bLine == true)
-						{
-							// Remove Line, set to "="
-							for (int px = 1; px < nFieldWidth - 1; px++)
-							{
-								pField[(nCurrentY + py) * nFieldWidth + px] = 8;
-							}
-							vLines.push_back(nCurrentY + py);
-						}
-					}
-				}
-				if (!vLines.empty())
-					nScore += (1 << vLines.size() * 2);
+				IncreaseScoreIfNeeded(vLines, nScore);
 
 				// Pick a new piece
-				nCurrentX = rand() % 5 + 1;
-				nCurrentY = 0;
-				nCurrentRotation = 0;
-				nCurrentPiece = rand() % 7;
+				GenerateNewPiece(nCurrentX, nCurrentY, nCurrentRotation, nCurrentPiece);
 
 				// If the piece doesn't fit straight away, it's game over.
 				bGameOver = !DoesPieceFit(nCurrentPiece, nCurrentRotation, nCurrentX, nCurrentY);
@@ -486,24 +464,13 @@ void game()
 		wchar_t symbols[11] = { L" ABCDEFG=■" };
 
 		// Draw Field
-		for (int x = 0; x < nFieldWidth; x++)
-		{
-			for (int y = 0; y < nFieldHeight; y++)
-				screen[(y + 2) * nScreenWidth + (x + 2)] = symbols[pField[y * nFieldWidth + x]];
-		}
+		DrawField(screen, symbols);
 
 		// Draw the current piece
-		for (int px = 0; px < 4; px++)
-		{
-			for (int py = 0; py < 4; py++)
-			{
-				if (pieces[nCurrentPiece][Rotate(px, py, nCurrentRotation)] != L'.')
-					screen[(nCurrentY + py + 2) * nScreenWidth + (nCurrentX + px + 2)] = nCurrentPiece + 65;
-			}
-		}
+		DrawPiece(nCurrentPiece, nCurrentRotation, screen, nCurrentY, nCurrentX);
 
 		// Draw Score
-		swprintf_s(&screen[2 * nScreenWidth + nFieldWidth + 6], 16, L"SCORE: %8d", nScore);
+		DrawScore(screen, nScore);
 
 		const float gravity = 9.8;
 		const int weightOfBlock = 2;
@@ -545,6 +512,82 @@ void game()
 	Sleep(1000);
 	system("CLS");
 	mainMenu();
+}
+
+void ChangeDifficultyIfNeeded(int& nSpeedCount, int& nPieceCount, int& nSpeed)
+{
+	nSpeedCount = 0;
+	nPieceCount++;
+
+	if (nPieceCount % 50 == 0)
+	{
+		if (nSpeed >= 10)
+			nSpeed--;
+	}
+}
+
+void DrawScore(wchar_t* screen, int nScore)
+{
+	swprintf_s(&screen[2 * nScreenWidth + nFieldWidth + 6], 16, L"SCORE: %8d", nScore);
+}
+
+void DrawPiece(int nCurrentPiece, int nCurrentRotation, wchar_t* screen, int nCurrentY, int nCurrentX)
+{
+	for (int px = 0; px < 4; px++)
+	{
+		for (int py = 0; py < 4; py++)
+		{
+			if (pieces[nCurrentPiece][Rotate(px, py, nCurrentRotation)] != L'.')
+				screen[(nCurrentY + py + 2) * nScreenWidth + (nCurrentX + px + 2)] = nCurrentPiece + 65;
+		}
+	}
+}
+
+void DrawField(wchar_t* screen, wchar_t  symbols[11])
+{
+	for (int x = 0; x < nFieldWidth; x++)
+	{
+		for (int y = 0; y < nFieldHeight; y++)
+			screen[(y + 2) * nScreenWidth + (x + 2)] = symbols[pField[y * nFieldWidth + x]];
+	}
+}
+
+void IncreaseScoreIfNeeded(std::vector<int>& vLines, int& nScore)
+{
+	if (!vLines.empty())
+		nScore += (1 << vLines.size() * 2);
+}
+
+void CheckCompletedLines(int nCurrentY, std::vector<int>& vLines)
+{
+	for (int py = 0; py < 4; py++)
+	{
+		if (nCurrentY + py < nFieldHeight - 1)
+		{
+			bool bLine = true;
+
+			for (int px = 1; px < nFieldWidth - 1; px++)
+				bLine &= (pField[(nCurrentY + py) * nFieldWidth + px]) != 0;
+
+			if (bLine == true)
+			{
+				// Remove Line, set to "="
+				for (int px = 1; px < nFieldWidth - 1; px++)
+				{
+					pField[(nCurrentY + py) * nFieldWidth + px] = 8;
+				}
+				vLines.push_back(nCurrentY + py);
+			}
+		}
+	}
+}
+
+void GenerateNewPiece(int& nCurrentX, int& nCurrentY, int& nCurrentRotation, int& nCurrentPiece)
+{
+	nCurrentX = rand() % 5 + 1;
+	nCurrentY = 0;
+	nCurrentRotation = 0;
+	nCurrentPiece = rand() % 7;
 }
 
 void GeneratePieces()
