@@ -13,6 +13,8 @@ int nFieldHeight = 18;
 int nScreenWidth = 120;
 int nScreenHeight = 30;
 
+int nCurrentY = 0;
+
 const int xStartPosition = 50;
 wstring pieces[7];
 
@@ -95,16 +97,34 @@ void settingsLogo()
 }
 
 void game();
-void ChangeDifficultyIfNeeded(int& nSpeedCount, int& nPieceCount, int& nSpeed);
-void DrawScore(wchar_t* screen, int nScore);
-void DrawPiece(int nCurrentPiece, int nCurrentRotation, wchar_t* screen, int nCurrentY, int nCurrentX);
-void DrawField(wchar_t* screen, wchar_t  symbols[11]);
-void IncreaseScoreIfNeeded(std::vector<int>& vLines, int& nScore);
-void CheckCompletedLines(int nCurrentY, std::vector<int>& vLines);
-void GenerateNewPiece(int& nCurrentX, int& nCurrentY, int& nCurrentRotation, int& nCurrentPiece);
-void GeneratePieces();
+void changeDifficultyIfNeeded(int& nSpeedCount, int& nPieceCount, int& nSpeed);
+void drawScore(wchar_t* screen, int nScore);
+void drawPiece(int nCurrentPiece, int nCurrentRotation, wchar_t* screen, int nCurrentY, int nCurrentX);
+void drawField(wchar_t* screen, wchar_t  symbols[11]);
+void increaseScoreIfNeeded(std::vector<int>& vLines, int& nScore);
+void checkCompletedLines(int nCurrentY, std::vector<int>& vLines);
+void generateNewPiece(int& nCurrentX, int& nCurrentY, int& nCurrentRotation, int& nCurrentPiece);
+void generatePieces();
 void helpMenu();
 void settingsMenu();
+
+void kineticEnergy()
+{
+	const float gravity = 9.8;
+	const int weightOfBlock = 2;
+	const int speedOfBlock = 3;
+	int height = 14 - nCurrentY;
+	float kineticEnergy = (weightOfBlock * pow(speedOfBlock, 2)) / 2;
+}
+
+void potentialEnergy()
+{
+	const float gravity = 9.8;
+	const int weightOfBlock = 2;
+	const int speedOfBlock = 3;
+	int height = 14;
+	float potentialEnergy = weightOfBlock * gravity * height;
+}
 
 void mainMenu()
 {
@@ -291,7 +311,7 @@ void settingsMenu()
 	}
 }
 
-int Rotate(int px, int py, int r)
+int rotate(int px, int py, int r)
 {
 	int pi = 0;
 
@@ -325,14 +345,14 @@ int Rotate(int px, int py, int r)
 	return pi;
 }
 
-bool DoesPieceFit(int nTetromino, int nRotation, int nPosX, int nPosY)
+bool doesPieceFit(int nTetromino, int nRotation, int nPosX, int nPosY)
 {
 	for (int px = 0; px < 4; px++)
 	{
 		for (int py = 0; py < 4; py++)
 		{
 			// Get index into piece
-			int pi = Rotate(px, py, nRotation);
+			int pi = rotate(px, py, nRotation);
 
 			//Index enters the field
 			int fi = (nPosY + py) * nFieldWidth + (nPosX + px);
@@ -369,7 +389,7 @@ void game()
 	DWORD dwBytesWritten = 0;
 
 	// Create assets
-	GeneratePieces();
+	generatePieces();
 
 	// Create play field buffer
 	pField = new wchar_t[nFieldWidth * nFieldHeight];
@@ -385,7 +405,6 @@ void game()
 	int nCurrentPiece = rand() % 7;
 	int nCurrentRotation = 0;
 	int nCurrentX = rand() % 5 + 1;
-	int nCurrentY = 0;
 	int nSpeed = 20;
 	int nSpeedCount = 0;
 	bool bForceDown = false;
@@ -410,14 +429,14 @@ void game()
 			bKey[k] = (0x8000 & GetAsyncKeyState((unsigned char)("\x27\x25\x28\x26"[k]))) != 0;
 
 		// Player Movement
-		nCurrentX += (bKey[0] && DoesPieceFit(nCurrentPiece, nCurrentRotation, nCurrentX + 1, nCurrentY)) ? 1 : 0;
-		nCurrentX -= (bKey[1] && DoesPieceFit(nCurrentPiece, nCurrentRotation, nCurrentX - 1, nCurrentY)) ? 1 : 0;
-		nCurrentY += (bKey[2] && DoesPieceFit(nCurrentPiece, nCurrentRotation, nCurrentX, nCurrentY + 1)) ? 1 : 0;
+		nCurrentX += (bKey[0] && doesPieceFit(nCurrentPiece, nCurrentRotation, nCurrentX + 1, nCurrentY)) ? 1 : 0;
+		nCurrentX -= (bKey[1] && doesPieceFit(nCurrentPiece, nCurrentRotation, nCurrentX - 1, nCurrentY)) ? 1 : 0;
+		nCurrentY += (bKey[2] && doesPieceFit(nCurrentPiece, nCurrentRotation, nCurrentX, nCurrentY + 1)) ? 1 : 0;
 
 		// Prevent uncontrollable rotation from holding rotate button
 		if (bKey[3])
 		{
-			nCurrentRotation += (bRotateHold && DoesPieceFit(nCurrentPiece, nCurrentRotation + 1, nCurrentX, nCurrentY)) ? 1 : 0;
+			nCurrentRotation += (bRotateHold && doesPieceFit(nCurrentPiece, nCurrentRotation + 1, nCurrentX, nCurrentY)) ? 1 : 0;
 			bRotateHold = false;
 		}
 		else
@@ -428,10 +447,10 @@ void game()
 		{
 			// Update difficulty every 50 pieces
 
-			ChangeDifficultyIfNeeded(nSpeedCount, nPieceCount, nSpeed);
+			changeDifficultyIfNeeded(nSpeedCount, nPieceCount, nSpeed);
 
 			// Test if piece can be moved down
-			if (DoesPieceFit(nCurrentPiece, nCurrentRotation, nCurrentX, nCurrentY + 1))
+			if (doesPieceFit(nCurrentPiece, nCurrentRotation, nCurrentX, nCurrentY + 1))
 				nCurrentY++;
 
 			else
@@ -441,21 +460,21 @@ void game()
 				{
 					for (int py = 0; py < 4; py++)
 					{
-						if (pieces[nCurrentPiece][Rotate(px, py, nCurrentRotation)] != L'.')
+						if (pieces[nCurrentPiece][rotate(px, py, nCurrentRotation)] != L'.')
 							pField[(nCurrentY + py) * nFieldWidth + (nCurrentX + px)] = nCurrentPiece + 1;
 					}
 				}
 
 				// Check for lines
-				CheckCompletedLines(nCurrentY, vLines);
+				checkCompletedLines(nCurrentY, vLines);
 
-				IncreaseScoreIfNeeded(vLines, nScore);
+				increaseScoreIfNeeded(vLines, nScore);
 
 				// Pick a new piece
-				GenerateNewPiece(nCurrentX, nCurrentY, nCurrentRotation, nCurrentPiece);
+				generateNewPiece(nCurrentX, nCurrentY, nCurrentRotation, nCurrentPiece);
 
 				// If the piece doesn't fit straight away, it's game over.
-				bGameOver = !DoesPieceFit(nCurrentPiece, nCurrentRotation, nCurrentX, nCurrentY);
+				bGameOver = !doesPieceFit(nCurrentPiece, nCurrentRotation, nCurrentX, nCurrentY);
 			}
 		}
 
@@ -464,20 +483,19 @@ void game()
 		wchar_t symbols[11] = { L" ABCDEFG=■" };
 
 		// Draw Field
-		DrawField(screen, symbols);
+		drawField(screen, symbols);
 
 		// Draw the current piece
-		DrawPiece(nCurrentPiece, nCurrentRotation, screen, nCurrentY, nCurrentX);
+		drawPiece(nCurrentPiece, nCurrentRotation, screen, nCurrentY, nCurrentX);
 
 		// Draw Score
-		DrawScore(screen, nScore);
+		drawScore(screen, nScore);
 
-		const float gravity = 9.8;
-		const int weightOfBlock = 2;
-		const int speedOfBlock = 3;
-		int height = 14 - nCurrentY;
-		float kineticEnergy = (weightOfBlock * pow(speedOfBlock, 2)) / 2;
-		float potentialEnergy = weightOfBlock * gravity * height;
+		// Draw kinetic energy
+		kineticEnergy();
+
+		// Draw potential energy
+		potentialEnergy();
 
 		// Animate Line Completion
 		if (!vLines.empty())
@@ -514,7 +532,7 @@ void game()
 	mainMenu();
 }
 
-void ChangeDifficultyIfNeeded(int& nSpeedCount, int& nPieceCount, int& nSpeed)
+void changeDifficultyIfNeeded(int& nSpeedCount, int& nPieceCount, int& nSpeed)
 {
 	nSpeedCount = 0;
 	nPieceCount++;
@@ -526,24 +544,24 @@ void ChangeDifficultyIfNeeded(int& nSpeedCount, int& nPieceCount, int& nSpeed)
 	}
 }
 
-void DrawScore(wchar_t* screen, int nScore)
+void drawScore(wchar_t* screen, int nScore)
 {
 	swprintf_s(&screen[2 * nScreenWidth + nFieldWidth + 6], 16, L"SCORE: %8d", nScore);
 }
 
-void DrawPiece(int nCurrentPiece, int nCurrentRotation, wchar_t* screen, int nCurrentY, int nCurrentX)
+void drawPiece(int nCurrentPiece, int nCurrentRotation, wchar_t* screen, int nCurrentY, int nCurrentX)
 {
 	for (int px = 0; px < 4; px++)
 	{
 		for (int py = 0; py < 4; py++)
 		{
-			if (pieces[nCurrentPiece][Rotate(px, py, nCurrentRotation)] != L'.')
+			if (pieces[nCurrentPiece][rotate(px, py, nCurrentRotation)] != L'.')
 				screen[(nCurrentY + py + 2) * nScreenWidth + (nCurrentX + px + 2)] = nCurrentPiece + 65;
 		}
 	}
 }
 
-void DrawField(wchar_t* screen, wchar_t  symbols[11])
+void drawField(wchar_t* screen, wchar_t  symbols[11])
 {
 	for (int x = 0; x < nFieldWidth; x++)
 	{
@@ -552,13 +570,13 @@ void DrawField(wchar_t* screen, wchar_t  symbols[11])
 	}
 }
 
-void IncreaseScoreIfNeeded(std::vector<int>& vLines, int& nScore)
+void increaseScoreIfNeeded(std::vector<int>& vLines, int& nScore)
 {
 	if (!vLines.empty())
 		nScore += (1 << vLines.size() * 2);
 }
 
-void CheckCompletedLines(int nCurrentY, std::vector<int>& vLines)
+void checkCompletedLines(int nCurrentY, std::vector<int>& vLines)
 {
 	for (int py = 0; py < 4; py++)
 	{
@@ -582,7 +600,7 @@ void CheckCompletedLines(int nCurrentY, std::vector<int>& vLines)
 	}
 }
 
-void GenerateNewPiece(int& nCurrentX, int& nCurrentY, int& nCurrentRotation, int& nCurrentPiece)
+void generateNewPiece(int& nCurrentX, int& nCurrentY, int& nCurrentRotation, int& nCurrentPiece)
 {
 	nCurrentX = rand() % 5 + 1;
 	nCurrentY = 0;
@@ -590,7 +608,7 @@ void GenerateNewPiece(int& nCurrentX, int& nCurrentY, int& nCurrentRotation, int
 	nCurrentPiece = rand() % 7;
 }
 
-void GeneratePieces()
+void generatePieces()
 {
 	pieces[0].append(L"..X...X...X...X.");
 	pieces[0].append(L"..X...X...X...X.");
