@@ -222,6 +222,103 @@ void helpMenu()
 	}
 }
 
+void settingsColour()
+{
+	int counter = 1;
+	char key;
+
+	for (int i = 0;;)
+	{
+		if (counter == 1) { displayColor[0] = BLUE; }
+		if (counter == 2) { displayColor[1] = RED; }
+		if (counter == 3) { displayColor[2] = YELLOW; }
+		if (counter == 4) { displayColor[3] = GREEN; }
+		if (counter == 5) { displayColor[4] = CYAN; }
+		if (counter == 6) { displayColor[5] = RED; }
+
+		gotoxy(xStartPosition - 5, 12);
+		colorSelection(displayColor[0]);
+		cout << "1. BLUE";
+
+		gotoxy(xStartPosition - 5, 13);
+		colorSelection(displayColor[1]);
+		cout << "2. RED";
+
+		gotoxy(xStartPosition - 5, 14);
+		colorSelection(displayColor[2]);
+		cout << "3. YELLOW";
+
+		gotoxy(xStartPosition - 5, 15);
+		colorSelection(displayColor[3]);
+		cout << "4. GREEN";
+
+		gotoxy(xStartPosition - 5, 16);
+		colorSelection(displayColor[4]);
+		cout << "5. CYAN";
+
+		gotoxy(xStartPosition - 5, 18);
+		colorSelection(displayColor[5]);
+		cout << "Go back";
+
+		key = _getch();
+
+		if (key == 72 && (counter >= 2 && counter <= 6)) // 72 - up arrow (keyboard)
+			counter--;
+		if (key == 80 && (counter >= 1 && counter <= 5)) // 80 - down arrow (keyboard)
+			counter++;
+
+		//carriage return - enter (keyboard)
+		if (key == '\r')
+		{
+			for (int i = 0; i < 6; i++)
+				displayColor[i] = WHITE;
+
+			system("CLS");
+
+			if (counter == 1)
+			{
+				colorSelection(BLUE);
+				game();
+				break;
+			}
+			else if (counter == 2)
+			{
+				colorSelection(RED);
+				game();
+				break;
+			}
+			else if (counter == 3)
+			{
+				colorSelection(YELLOW);
+				game();
+				break;
+			}
+			else if (counter == 4)
+			{
+				colorSelection(GREEN);
+				game();
+				break;
+			}
+			else if (counter == 5)
+			{
+				colorSelection(CYAN);
+				game();
+				break;
+			}
+
+			else if (counter == 6)
+			{
+				colorSelection(WHITE);
+				system("CLS");
+				mainMenu();
+			}
+		}
+		for (int i = 0; i < 6; i++)
+			displayColor[i] = WHITE;
+	}
+}
+
+
 void settingsMenu()
 {
 	settingsLogo();
@@ -236,21 +333,24 @@ void settingsMenu()
 		if (counter == 3) { displayColor[2] = RED; }
 		if (counter == 4) { displayColor[3] = RED; }
 
-		gotoxy(xStartPosition, 5);
+		gotoxy(xStartPosition - 5, 5);
 		colorSelection(displayColor[0]);
 		cout << "1. Start";
 
-		gotoxy(xStartPosition, 6);
+		gotoxy(xStartPosition - 5, 6);
 		colorSelection(displayColor[1]);
 		cout << "2. Help";
 
-		gotoxy(xStartPosition, 7);
+		gotoxy(xStartPosition - 5, 7);
 		colorSelection(displayColor[2]);
 		cout << "3. Settings";
 
-		gotoxy(xStartPosition, 8);
+		gotoxy(xStartPosition - 5, 8);
 		colorSelection(displayColor[3]);
 		cout << "4. Exit";
+
+
+		settingsColour();
 
 		key = _getch();
 
@@ -355,8 +455,6 @@ bool DoesPieceFit(int nTetromino, int nRotation, int nPosX, int nPosY)
 
 void game()
 {
-	colorSelection(RED);
-
 	// Create Screen Buffer
 	wchar_t* screen = new wchar_t[nScreenWidth * nScreenHeight];
 
