@@ -414,14 +414,14 @@ void settingsMenu()
 bool questions()
 {
 		gotoxy(xStartPosition - 5, 20);
-		cout << "1. Earth's gravity is more than that ont the Moon.    T / F" << endl; // T
+		cout << "1. Earth's gravity is more than that on the Moon.    T / F" << endl; // T
 
 		gotoxy(xStartPosition - 5, 21);
 		cout << "2. 'J/s' is a unit of measurement for speed.    T / F" << endl; // F
 
 		gotoxy(xStartPosition - 5, 22);
-		cout << "3. Actoin without counteraction is not possible.    T / F" << endl; // T
-
+		cout << "3. Action without counteraction is not possible.    T / F" << endl; // T
+		
 		gotoxy(xStartPosition - 5, 23);
 		cout << "4. Actions and counteractions aren't always equal.    T / F" << endl; // F
 
@@ -429,7 +429,7 @@ bool questions()
 		cout << "5. Mechanical energy is equal to the sum of kinetic and potential energy.    T / F" << endl; // T
 
 		gotoxy(xStartPosition - 5, 25);
-		cout << "6. Energy never disappears.    T / F" << endl; // T
+		cout << "6. Energy can't be destoyed.    T / F" << endl; // T
 
 		gotoxy(xStartPosition - 5, 26);
 		cout << "7. Friction forces increase mechanical energy.    T / F" << endl; // F
