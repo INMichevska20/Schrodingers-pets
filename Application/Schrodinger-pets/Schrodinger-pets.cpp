@@ -411,6 +411,39 @@ void settingsMenu()
 	}
 }
 
+bool questions()
+{
+		gotoxy(xStartPosition - 5, 20);
+		cout << "1. Earth's gravity is more than that ont the Moon.    T / F" << endl; // T
+
+		gotoxy(xStartPosition - 5, 21);
+		cout << "2. 'J/s' is a unit of measurement for speed.    T / F" << endl; // F
+
+		gotoxy(xStartPosition - 5, 22);
+		cout << "3. Actoin without counteraction is not possible.    T / F" << endl; // T
+
+		gotoxy(xStartPosition - 5, 23);
+		cout << "4. Actions and counteractions aren't always equal.    T / F" << endl; // F
+
+		gotoxy(xStartPosition - 5, 24);
+		cout << "5. Mechanical energy is equal to the sum of kinetic and potential energy.    T / F" << endl; // T
+
+		gotoxy(xStartPosition - 5, 25);
+		cout << "6. Energy never disappears.    T / F" << endl; // T
+
+		gotoxy(xStartPosition - 5, 26);
+		cout << "7. Friction forces increase mechanical energy.    T / F" << endl; // F
+
+		gotoxy(xStartPosition - 5, 27);
+		cout << "8. Hydraulic machines gain strength.    T / F" << endl; // T
+
+		gotoxy(xStartPosition - 5, 28);
+		cout << "9. Pushing power is equal to the volume of the displaced liquid.    T / F" << endl; // F
+
+		gotoxy(xStartPosition - 5, 29);
+		cout << "10. Pushing power and the force of gravity have the same directions.    T / F" << endl; // F	
+}
+
 int rotate(int px, int py, int r)
 {
 	int pi = 0;
