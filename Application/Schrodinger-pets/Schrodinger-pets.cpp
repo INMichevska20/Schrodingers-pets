@@ -20,6 +20,9 @@ wstring pieces[7];
 
 wchar_t* pField = nullptr;
 
+int colorSelectionVar;
+int tempScore = 0;
+
 // From good old internet
 enum
 {
@@ -96,18 +99,6 @@ void settingsLogo()
 )" << '\n';
 }
 
-void game();
-void changeDifficultyIfNeeded(int& nSpeedCount, int& nPieceCount, int& nSpeed);
-void drawScore(wchar_t* screen, int nScore);
-void drawPiece(int nCurrentPiece, int nCurrentRotation, wchar_t* screen, int nCurrentY, int nCurrentX);
-void drawField(wchar_t* screen, wchar_t  symbols[11]);
-void increaseScoreIfNeeded(std::vector<int>& vLines, int& nScore);
-void checkCompletedLines(int nCurrentY, std::vector<int>& vLines);
-void generateNewPiece(int& nCurrentX, int& nCurrentY, int& nCurrentRotation, int& nCurrentPiece);
-void generatePieces();
-void helpMenu();
-void settingsMenu();
-
 void kineticEnergy()
 {
 	const float gravity = 9.8;
@@ -126,6 +117,158 @@ void potentialEnergy()
 	float potentialEnergy = weightOfBlock * gravity * height;
 }
 
+void mainMenu();
+void gameOver();
+void game();
+void changeDifficultyIfNeeded(int& nSpeedCount, int& nPieceCount, int& nSpeed);
+void drawScore(wchar_t* screen, int nScore);
+void drawPiece(int nCurrentPiece, int nCurrentRotation, wchar_t* screen, int nCurrentY, int nCurrentX);
+void drawField(wchar_t* screen, wchar_t  symbols[11]);
+void increaseScoreIfNeeded(std::vector<int>& vLines, int& nScore);
+void checkCompletedLines(int nCurrentY, std::vector<int>& vLines);
+void generateNewPiece(int& nCurrentX, int& nCurrentY, int& nCurrentRotation, int& nCurrentPiece);
+void generatePieces();
+void helpMenu();
+void settingsMenu();
+
+struct QUESTION
+{
+	string questions[10] =
+	{
+		"Earth's gravity is more than that ont the Moon.    T / F", // T
+		"'J/s' is a unit of measurement for speed.    T / F", // F
+		"Actoin without counteraction is not possible.    T / F", // T
+		"Actions and counteractions aren't always equal.    T / F", // F
+		"Mechanical energy is equal to the sum of kinetic and potential energy.    T / F", // T
+		"Energy never disappears.    T / F", // T
+		"Friction forces increase mechanical energy.    T / F", // F
+		"Hydraulic machines gain strength.    T / F", // T
+		"Pushing power is equal to the volume of the displaced liquid.    T / F", // F
+		"Pushing power and the force of gravity have the same directions.    T / F"// F	
+	};
+	bool questionAnswers[10] = { true, false, true, false, true, true, false, true, false , false };
+};
+
+int questionNumber = 0;
+
+QUESTION questionVar;
+
+void questionMenu()
+{
+	Logo();
+
+	int counter = 1;
+	char key;
+
+	for (;;)
+	{
+		if (counter == 1) { displayColor[0] = GREEN; }
+		if (counter == 2) { displayColor[1] = RED; }
+
+		gotoxy(15, 6);
+		colorSelection(WHITE);
+		cout << "Here is a chance to get back in the game!";
+		gotoxy(15, 7);
+		cout << "Just answer the question below right.";
+
+		gotoxy(15, 8);
+		cout << questionVar.questions[questionNumber];
+
+		gotoxy(15, 10);
+		colorSelection(displayColor[0]);
+		cout << "1. TRUE";
+
+		gotoxy(15, 11);
+		colorSelection(displayColor[1]);
+		cout << "2. FALSE";
+
+		key = _getch();
+
+		if (key == 72 && (counter >= 2)) // 72 - up arrow (keyboard)
+			counter--;
+		if (key == 80 && (counter < 2)) // 80 - down arrow (keyboard)
+			counter++;
+
+		//carriage return - enter (keyboard)
+		if (key == '\r')
+		{
+			for (int i = 0; i < 2; i++)
+				displayColor[i] = WHITE;
+
+			system("CLS");
+
+			if (counter == 1)
+			{
+				if (questionVar.questionAnswers[questionNumber])
+				{
+					if (questionNumber == 10)
+						questionNumber = 0;
+					else
+						questionNumber++;
+					if (colorSelectionVar == 1)
+						colorSelection(BLUE);
+					else if (colorSelectionVar == 2)
+						colorSelection(RED);
+					else if (colorSelectionVar == 3)
+						colorSelection(YELLOW);
+					else if (colorSelectionVar == 4)
+						colorSelection(GREEN);
+					else if (colorSelectionVar == 5)
+						colorSelection(CYAN);
+					else
+						colorSelection(WHITE);
+					game();
+					break;
+				}
+				else
+				{
+					if (questionNumber == 10)
+						questionNumber = 0;
+					else
+						questionNumber++;
+					gameOver();
+					break;
+				}
+			}
+			else if (counter == 2)
+			{
+				if (!questionVar.questionAnswers[questionNumber])
+				{
+					if (questionNumber == 10)
+						questionNumber = 0;
+					else
+						questionNumber++;
+					if (colorSelectionVar == 1)
+						colorSelection(BLUE);
+					else if (colorSelectionVar == 2)
+						colorSelection(RED);
+					else if (colorSelectionVar == 3)
+						colorSelection(YELLOW);
+					else if (colorSelectionVar == 4)
+						colorSelection(GREEN);
+					else if (colorSelectionVar == 5)
+						colorSelection(CYAN);
+					else
+						colorSelection(WHITE);
+					game();
+					break;
+				}
+				else
+				{
+					if (questionNumber == 10)
+						questionNumber = 0;
+					else
+						questionNumber++;
+					gameOver();
+					break;
+				}
+			}
+		}
+		for (int i = 0; i < 2; i++)
+			displayColor[i] = WHITE;
+	}
+}
+
 void mainMenu()
 {
 	Logo();
@@ -136,9 +279,7 @@ void mainMenu()
 	for (;;)
 	{
 		if (counter >= 1 && counter <= 4)
-		{
 			displayColor[counter - 1] = RED;
-		}
 
 		gotoxy(xStartPosition, 5);
 		colorSelection(displayColor[0]);
@@ -218,6 +359,8 @@ void helpMenu()
 		cout << "Down arrow: Drop the tetromino down by 1 block! " << endl;
 		gotoxy(25, 9);
 		cout << "Up arrow: Rotate the tetromino by 90*!";
+		gotoxy(25, 10);
+		cout << "Escape button: Exit";
 
 		gotoxy(xStartPosition, 11);
 		colorSelection(displayColor[0]);
@@ -295,41 +438,23 @@ void settingsColour()
 
 			system("CLS");
 
-			if (counter == 1)
-			{
-				colorSelection(BLUE);
-				game();
-				break;
-			}
-			else if (counter == 2)
-			{
-				colorSelection(RED);
-				game();
-				break;
-			}
-			else if (counter == 3)
-			{
-				colorSelection(YELLOW);
-				game();
-				break;
-			}
-			else if (counter == 4)
-			{
-				colorSelection(GREEN);
-				game();
-				break;
-			}
-			else if (counter == 5)
-			{
-				colorSelection(CYAN);
-				game();
-				break;
-			}
-			else if (counter == 6)
+			// Blue == 1
+			// Red == 2
+			// Yellow == 3
+			// Green == 4
+			// Cyan == 5
+
+			if (counter == 6)
 			{
 				colorSelection(WHITE);
 				system("CLS");
 				mainMenu();
+			}
+			else
+			{
+				colorSelectionVar = counter;
+				mainMenu();
+				break;
 			}
 		}
 		for (int i = 0; i < 6; i++)
@@ -420,6 +545,17 @@ bool doesPieceFit(int nTetromino, int nRotation, int nPosX, int nPosY)
 
 void game()
 {
+	if (colorSelectionVar == 1)
+		colorSelection(BLUE);
+	else if (colorSelectionVar == 2)
+		colorSelection(RED);
+	else if (colorSelectionVar == 3)
+		colorSelection(YELLOW);
+	else if (colorSelectionVar == 4)
+		colorSelection(GREEN);
+	else if (colorSelectionVar == 5)
+		colorSelection(CYAN);
+
 	// Create Screen Buffer
 	wchar_t* screen = new wchar_t[nScreenWidth * nScreenHeight];
 
@@ -457,6 +593,8 @@ void game()
 	vector<int> vLines;
 	bool bGameOver = false;
 
+	bool hasExitedOnPurpose = false;
+
 	// Main Loop
 	while (!bGameOver)
 	{
@@ -470,6 +608,12 @@ void game()
 		// Player Input
 		for (int k = 0; k < 4; k++)
 			bKey[k] = (0x8000 & GetAsyncKeyState((unsigned char)("\x27\x25\x28\x26"[k]))) != 0;
+
+		if (GetAsyncKeyState(VK_ESCAPE))
+		{
+			hasExitedOnPurpose = true;
+			break;
+		}
 
 		// Player Movement
 		nCurrentX += (bKey[0] && doesPieceFit(nCurrentPiece, nCurrentRotation, nCurrentX + 1, nCurrentY)) ? 1 : 0;
@@ -532,7 +676,7 @@ void game()
 		drawPiece(nCurrentPiece, nCurrentRotation, screen, nCurrentY, nCurrentX);
 
 		// Draw Score
-		drawScore(screen, nScore);
+		drawScore(screen, nScore + tempScore);
 
 		// Draw kinetic energy
 		kineticEnergy();
@@ -566,13 +710,35 @@ void game()
 		WriteConsoleOutputCharacter(hConsole, screen, nScreenWidth * nScreenHeight, { 0,0 }, &dwBytesWritten);
 	}
 
-	// GameOver
 	CloseHandle(hConsole);
 
-	cout << "Game Over! Score:" << nScore << endl;
-	Sleep(1000);
-	system("CLS");
-	mainMenu();
+	if (!hasExitedOnPurpose)
+	{
+		tempScore += nScore;
+		questionMenu();
+	}
+	else if (hasExitedOnPurpose)
+		gameOver();
+}
+
+void gameOver()
+{
+	colorSelection(WHITE);
+
+	cout << "Game Over! Score:" << tempScore << endl;
+
+	cout << "\nPlease press ENTER to go to the main menu." << endl;
+
+	while (true)
+	{
+		if (_getch() == '\r')
+		{
+			system("CLS");
+			mainMenu();
+			tempScore = 0;
+			break;
+		}
+	}
 }
 
 void changeDifficultyIfNeeded(int& nSpeedCount, int& nPieceCount, int& nSpeed)
