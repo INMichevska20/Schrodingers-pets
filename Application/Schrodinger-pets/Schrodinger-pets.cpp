@@ -117,9 +117,9 @@ struct QUESTION
 {
 	string questions[10] =
 	{
-		"Earth's gravity is more than that ont the Moon.    T / F", // T
+		"Earth's gravity is more than that on the Moon.    T / F", // T
 		"'J/s' is a unit of measurement for speed.    T / F", // F
-		"Actoin without counteraction is not possible.    T / F", // T
+		"Action without counteraction is not possible.    T / F", // T
 		"Actions and counteractions aren't always equal.    T / F", // F
 		"Mechanical energy is equal to the sum of kinetic and potential energy.    T / F", // T
 		"Energy never disappears.    T / F", // T
