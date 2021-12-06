@@ -16,6 +16,7 @@ int nScreenHeight = 30;
 int nCurrentY = 0;
 
 const int xStartPosition = 50;
+
 wstring pieces[7];
 
 wchar_t* pField = nullptr;
@@ -56,7 +57,7 @@ bool colorSelection(WORD newColor)
 	return false;
 }
 
-//from good old internet
+// Coordinates of X and Y
 void gotoxy(int x, int y)
 {
 	COORD c;
@@ -64,7 +65,6 @@ void gotoxy(int x, int y)
 	c.Y = y;
 	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), c);
 }
-
 
 void Logo()
 {
@@ -97,24 +97,6 @@ void settingsLogo()
 					___] |___  |   |  | | \| |__] ___] 
                                                                                                                 
 )" << '\n';
-}
-
-void kineticEnergy()
-{
-	const float gravity = 9.8;
-	const int weightOfBlock = 2;
-	const int speedOfBlock = 3;
-	int height = 14 - nCurrentY;
-	float kineticEnergy = (weightOfBlock * pow(speedOfBlock, 2)) / 2;
-}
-
-void potentialEnergy()
-{
-	const float gravity = 9.8;
-	const int weightOfBlock = 2;
-	const int speedOfBlock = 3;
-	int height = 14;
-	float potentialEnergy = weightOfBlock * gravity * height;
 }
 
 void mainMenu();
@@ -462,7 +444,6 @@ void settingsColour()
 	}
 }
 
-
 void settingsMenu()
 {
 	settingsLogo();
@@ -479,7 +460,6 @@ void settingsMenu()
 		settingsColour();
 	}
 }
-
 
 int rotate(int px, int py, int r)
 {
@@ -677,12 +657,6 @@ void game()
 
 		// Draw Score
 		drawScore(screen, nScore + tempScore);
-
-		// Draw kinetic energy
-		kineticEnergy();
-
-		// Draw potential energy
-		potentialEnergy();
 
 		// Animate Line Completion
 		if (!vLines.empty())
