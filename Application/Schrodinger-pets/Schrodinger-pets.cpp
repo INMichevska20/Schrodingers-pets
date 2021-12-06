@@ -89,9 +89,9 @@ void settingsLogo()
 {
 	colorSelection(YELLOW);
 	cout << R"(
-				____ ____ ___ ___ _ _  _ ____ ____ 
-				[__  |___  |   |  | |\ | | __ [__  
-				___] |___  |   |  | | \| |__] ___] 
+					____ ____ ___ ___ _ _  _ ____ ____ 
+					[__  |___  |   |  | |\ | | __ [__  
+					___] |___  |   |  | | \| |__] ___] 
                                                                                                                 
 )" << '\n';
 }
@@ -188,7 +188,7 @@ void mainMenu()
 			}
 			else if (counter == 4)
 			{
-				break;
+				exit(EXIT_SUCCESS);
 			}
 		}
 		for (int i = 0; i < 4; i++)
@@ -209,19 +209,19 @@ void helpMenu()
 
 		colorSelection(GREEN);
 		gotoxy(25, 5);
-		cout << "  Controls:" << endl;
+		cout << "Controls:" << endl;
 		gotoxy(25, 6);
-		cout << "  Right arrow: Move the tetromino to the right by 1 block!" << endl;
+		cout << "Right arrow: Move the tetromino to the right by 1 block!" << endl;
 		gotoxy(25, 7);
-		cout << "  Left arrow: Move the tetromino to the left by 1 block!" << endl;
+		cout << "Left arrow: Move the tetromino to the left by 1 block!" << endl;
 		gotoxy(25, 8);
-		cout << "  Down arrow: Drop the tetromino down by 1 block! " << endl;
+		cout << "Down arrow: Drop the tetromino down by 1 block! " << endl;
 		gotoxy(25, 9);
-		cout << "  Up arrow: Rotate the tetromino by 90*!";
+		cout << "Up arrow: Rotate the tetromino by 90*!";
 
 		gotoxy(xStartPosition, 11);
 		colorSelection(displayColor[0]);
-		cout << "		  Go Back";
+		cout << "Go Back";
 
 		key = _getch();
 
@@ -256,27 +256,27 @@ void settingsColour()
 		if (counter == 5) { displayColor[4] = CYAN; }
 		if (counter == 6) { displayColor[5] = RED; }
 
-		gotoxy(xStartPosition - 5, 12);
+		gotoxy(47, 6);
 		colorSelection(displayColor[0]);
 		cout << "1. BLUE";
 
-		gotoxy(xStartPosition - 5, 13);
+		gotoxy(47, 7);
 		colorSelection(displayColor[1]);
 		cout << "2. RED";
 
-		gotoxy(xStartPosition - 5, 14);
+		gotoxy(47, 8);
 		colorSelection(displayColor[2]);
 		cout << "3. YELLOW";
 
-		gotoxy(xStartPosition - 5, 15);
+		gotoxy(47, 9);
 		colorSelection(displayColor[3]);
 		cout << "4. GREEN";
 
-		gotoxy(xStartPosition - 5, 16);
+		gotoxy(47, 10);
 		colorSelection(displayColor[4]);
 		cout << "5. CYAN";
 
-		gotoxy(xStartPosition - 5, 18);
+		gotoxy(47, 13);
 		colorSelection(displayColor[5]);
 		cout << "Go back";
 
@@ -325,7 +325,6 @@ void settingsColour()
 				game();
 				break;
 			}
-
 			else if (counter == 6)
 			{
 				colorSelection(WHITE);
@@ -352,97 +351,10 @@ void settingsMenu()
 		if (counter == 2) { displayColor[1] = RED; }
 		if (counter == 3) { displayColor[2] = RED; }
 		if (counter == 4) { displayColor[3] = RED; }
-
-		gotoxy(xStartPosition - 5, 5);
-		colorSelection(displayColor[0]);
-		cout << "1. Start";
-
-		gotoxy(xStartPosition - 5, 6);
-		colorSelection(displayColor[1]);
-		cout << "2. Help";
-
-		gotoxy(xStartPosition - 5, 7);
-		colorSelection(displayColor[2]);
-		cout << "3. Settings";
-
-		gotoxy(xStartPosition - 5, 8);
-		colorSelection(displayColor[3]);
-		cout << "4. Exit";
-
-
 		settingsColour();
-
-		key = _getch();
-
-		if (key == 72 && (counter >= 2 && counter <= 4)) // 72 - up arrow (keyboard)
-			counter--;
-		if (key == 80 && (counter >= 1 && counter <= 3)) // 80 - down arrow (keyboard)
-			counter++;
-
-		//carriage return - enter (keyboard)
-		if (key == '\r')
-		{
-			for (int i = 0; i < 4; i++)
-				displayColor[i] = WHITE;
-
-			system("CLS");
-
-			if (counter == 1)
-			{
-				game();
-				break;
-			}
-			else if (counter == 2)
-			{
-				helpMenu();
-				break;
-			}
-			else if (counter == 3)
-			{
-
-			}
-			else if (counter == 4)
-			{
-				break;
-			}
-		}
-		for (int i = 0; i < 4; i++)
-			displayColor[i] = WHITE;
 	}
 }
 
-bool questions()
-{
-		gotoxy(xStartPosition - 5, 20);
-		cout << "1. Earth's gravity is more than that on the Moon.    T / F" << endl; // T
-
-		gotoxy(xStartPosition - 5, 21);
-		cout << "2. 'J/s' is a unit of measurement for speed.    T / F" << endl; // F
-
-		gotoxy(xStartPosition - 5, 22);
-		cout << "3. Action without counteraction is not possible.    T / F" << endl; // T
-		
-		gotoxy(xStartPosition - 5, 23);
-		cout << "4. Actions and counteractions aren't always equal.    T / F" << endl; // F
-
-		gotoxy(xStartPosition - 5, 24);
-		cout << "5. Mechanical energy is equal to the sum of kinetic and potential energy.    T / F" << endl; // T
-
-		gotoxy(xStartPosition - 5, 25);
-		cout << "6. Energy can't be destoyed.    T / F" << endl; // T
-
-		gotoxy(xStartPosition - 5, 26);
-		cout << "7. Friction forces increase mechanical energy.    T / F" << endl; // F
-
-		gotoxy(xStartPosition - 5, 27);
-		cout << "8. Hydraulic machines gain strength.    T / F" << endl; // T
-
-		gotoxy(xStartPosition - 5, 28);
-		cout << "9. Pushing power is equal to the volume of the displaced liquid.    T / F" << endl; // F
-
-		gotoxy(xStartPosition - 5, 29);
-		cout << "10. Pushing power and the force of gravity have the same directions.    T / F" << endl; // F	
-}
 
 int rotate(int px, int py, int r)
 {
